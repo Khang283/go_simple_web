@@ -1,7 +1,7 @@
 package router
 
 import (
-	"crud/student"
+	"crud/apis"
 	"fmt"
 	"net/http"
 
@@ -11,7 +11,7 @@ import (
 func CreateNewRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleIndex)
-	student.StudentRoute(r)
+	apis.StudentRoute(r)
 	// r.HandleFunc("/student", handleGetStudent).Methods("GET")
 	// r.HandleFunc("/student/{id}", handleGetStudentById).Methods("GET")
 	// r.HandleFunc("/student", handleCreateStudent).Methods("POST")
