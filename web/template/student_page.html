@@ -1,0 +1,44 @@
+{{define "body"}}
+<h2 id="student_header">List of students</h2>
+<div>
+  <table id="table_student">
+    <tr>
+      <th>Id</th>
+      <th>Name</th>
+      <th>Age</th>
+      <th>Gender</th>
+      <th colspan="2">Actions</th>
+    </tr>
+    {{range .Data}}
+    <tr>
+      <td>{{.Id}}</td>
+      <td>{{.Name}}</td>
+      <td>{{.Age}}</td>
+      <td>{{.Gender}}</td>
+      <td><button type="button">Edit</button></td>
+      <td><button type="button">Delete</button></td>
+    </tr>
+    {{end}}
+  </table>
+</div>
+<div hx-ext="json-enc">
+  <h2>Add student</h2>
+  <input type="text" id="name" name="name" value="" placeholder="Enter name" />
+  <br />
+  <input type="number" id="age" name="age" value="" placeholder="Enter age" />
+  <br />
+  <label for="gender">Gender</label>
+  <select name="gender" id="gender">
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+  </select>
+  <br />
+  <button
+    hx-post="/student"
+    hx-target="#table_student"
+    hx-include="#name, #gender, #age"
+  >
+    Add
+  </button>
+</div>
+{{end}}

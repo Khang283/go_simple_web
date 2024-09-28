@@ -1,0 +1,24 @@
+stages:
+  - test
+  - build
+
+test:
+  stage: test
+  image: go:1.23.1
+  before_script:
+    - go mod download
+  script:
+    - go test -v ./test
+
+build:
+  stage: build
+  image: docker:27.3
+  services:
+    - docker:27.3-dind
+  before_script:
+    - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD $DOCKERHUB_REGISTRY
+  script:
+    - docker pull $DOCKERHUB_REGISTRY_IMAGE:latest || true
+    - docker build --cache-from $DOCKERHUB_REGISTRY_IMAGE:latest --tag $DOCKERHUB_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $DOCKERHUB_REGISTRY_IMAGE:latest .
+    - docker push $DOCKERHUB_REGISTRY_IMAGE:$CI_COMMIT_SHA
+    - docker push $DOCKERHUB_REGISTRY_IMAGE:latest

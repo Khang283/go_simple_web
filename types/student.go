@@ -10,3 +10,15 @@ type Student struct {
 type StudentDeleteRequest struct {
 	Id string `json:"id"`
 }
+
+type GetStudentResponse struct {
+	Status string
+	Error  string
+	Data   []Student
+}
+
+type CreateStudentRequest struct {
+	Name   string `json:"name"`
+	Age    string `json:"age"`
+	Gender string `json:"gender"`
+}

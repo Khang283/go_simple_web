@@ -4,8 +4,11 @@ import (
 	"crud/daos"
 	"crud/types"
 	"encoding/json"
+	"html/template"
 	"log"
 	"net/http"
+	"path/filepath"
+	"strconv"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -20,8 +23,14 @@ func StudentRoute(r *mux.Router) {
 }
 
 func handleGetStudent(w http.ResponseWriter, r *http.Request) {
-	student := daos.GetStudentList()
-	json.NewEncoder(w).Encode(student)
+	student := types.GetStudentResponse{
+		Data:   daos.GetStudentList(),
+		Status: "200",
+		Error:  "",
+	}
+	dir, _ := filepath.Abs("web/")
+	tmpl := template.Must(template.ParseFiles(dir+"/template/layout/index.html", dir+"/template/student_page.html"))
+	tmpl.Execute(w, student)
 }
 
 func handleGetStudentById(w http.ResponseWriter, r *http.Request) {
@@ -34,13 +43,24 @@ func handleCreateStudent(w http.ResponseWriter, r *http.Request) {
 	dec := json.NewDecoder(r.Body)
 	dec.DisallowUnknownFields()
 	var s types.Student
-	err := dec.Decode(&s)
+	var requestBody types.CreateStudentRequest
+	err := dec.Decode(&requestBody)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	s.Id = uuid.New().String()
+	age, err := strconv.Atoi(requestBody.Age)
+	if err != nil {
+		log.Print(err.Error())
+	}
+	s = types.Student{
+		Id:     uuid.New().String(),
+		Name:   requestBody.Name,
+		Age:    age,
+		Gender: requestBody.Gender,
+	}
 	isInsert := daos.CreateStudent(&s)
 	if isInsert {
+		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(s)
 	}
 }

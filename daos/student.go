@@ -3,15 +3,16 @@ package daos
 import (
 	"context"
 	"crud/types"
+	"crud/util"
 	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var DATABASE_URL string = "postgresql://postgres:admin@localhost:5432/testdb"
+var DATABASE_URL *string = &util.DATABASE_URL
 
 func GetStudentList() []types.Student {
-	dbpool, err := pgxpool.New(context.Background(), DATABASE_URL)
+	dbpool, err := pgxpool.New(context.Background(), *DATABASE_URL)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -36,7 +37,7 @@ func GetStudentList() []types.Student {
 }
 
 func GetStudentById(id string) types.Student {
-	dbpool, err := pgxpool.New(context.Background(), DATABASE_URL)
+	dbpool, err := pgxpool.New(context.Background(), *DATABASE_URL)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -55,7 +56,7 @@ func GetStudentById(id string) types.Student {
 }
 
 func CreateStudent(student *types.Student) bool {
-	dbpool, err := pgxpool.New(context.Background(), DATABASE_URL)
+	dbpool, err := pgxpool.New(context.Background(), *DATABASE_URL)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -78,7 +79,7 @@ func DeleteStudent(id string) bool {
     delete from students where id = $1
   `
 	ctx := context.Background()
-	dbpool, err := pgxpool.New(context.Background(), DATABASE_URL)
+	dbpool, err := pgxpool.New(context.Background(), *DATABASE_URL)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -98,7 +99,7 @@ func UpdateStudent(student types.Student) bool {
 	query := `
     update students set name = $1, age = $2, gender = $3 where id = $4
   `
-	dbpool, err := pgxpool.New(ctx, DATABASE_URL)
+	dbpool, err := pgxpool.New(ctx, *DATABASE_URL)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
