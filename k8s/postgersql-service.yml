@@ -1,0 +1,16 @@
+# https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgersql-service
+  namespace: default
+spec:
+  selector:
+    app: postgersql-service
+  type: ClusterIP
+  ports:
+    - name: postgersql-service
+      protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
