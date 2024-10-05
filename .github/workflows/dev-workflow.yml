@@ -1,0 +1,24 @@
+name: Develop branch CI/CD
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  test:
+    runs-on: golang:1.23.1
+    steps:
+      - run: echo "Downloading dependecies ..."
+      - run: go mod download
+      - run: echo "Start testing ..."
+      - run: go test -v ./test
+  build:
+    runs-on: docker:27.3
+    services:
+      docker-dind:
+        image: docker:27.3-dind
+    steps:
+      - run: docker login -u ${{ secret.DOCKERHUB_USERNAME }} -p ${{ secret.DOCKERHUB_PASSWORD }} ${{ vars.DOCKERHUB_REGISTRY }}
+      - run: docker pull ${{ vars.DOCKERHUB_REGISTRY_IMAGE }}:latest || true
+      - run: docker build --cache-from ${{ vars.DOCKERHUB_REGISTRY_IMAGE }}:latest --tag ${{ vars.DOCKERHUB_REGISTRY_IMAGE }}:${{ github.GITHUB_SHA }} --tag ${{ vars.DOCKERHUB_REGISTRY_IMAGE }}:latest .
+      - run: docker push ${{ vars.DOCKERHUB_REGISTRY_IMAGE }}:latest
+      - run: docker push ${{ vars.DOCKERHUB_REGISTRY_IMAGE }}:${{ github.GITHUB_SHA }}
