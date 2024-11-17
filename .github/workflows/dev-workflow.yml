@@ -5,7 +5,7 @@ on:
       - develop
 jobs:
   test:
-    runs-on: golang:1.23.1
+    runs-on: self-hosted
     steps:
       - run: echo "Downloading dependecies ..."
       - run: go mod download
